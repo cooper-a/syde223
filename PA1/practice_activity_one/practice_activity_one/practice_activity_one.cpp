@@ -97,14 +97,9 @@ public:
 
 	Playlist shuffle_songs() {
 		Playlist shuffled_playlist;
-		vector<int> randomized;
-		for (int i = 0; i < my_playlist.size(); ++i) {
-			randomized.push_back(i);
-		}
-		random_shuffle(randomized.begin(), randomized.end());
-		for (int i = 0; i < randomized.size(); ++i) {
-			shuffled_playlist.insert_song(my_playlist[i]);
-		}
+		vector<Song> copy_playlist = my_playlist;
+		random_shuffle(copy_playlist.begin(), copy_playlist.end());
+		shuffled_playlist.my_playlist = copy_playlist;
 		return shuffled_playlist;
 	}
 
