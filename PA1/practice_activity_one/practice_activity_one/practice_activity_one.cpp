@@ -2,9 +2,12 @@
 //
 
 #include <iostream>
-#include<string>
-#include<vector>
-
+#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <vector>
+#include <algorithm> 
+#include <time.h>
 using namespace std;
 
 class Music {
@@ -61,9 +64,10 @@ public:
 };
 
 class Playlist {
-	friend Playlist operator+(const Playlist& playlist_one, const Playlist& playlist_two);
+	
 
 public:
+	friend Playlist operator+(const Playlist& playlist_one, const Playlist& playlist_two);
 	vector<Song> my_playlist;
 
 	bool insert_song(Song& song_info) {
@@ -87,15 +91,39 @@ public:
 
 
 	Playlist shuffle_songs() {
-
+		Playlist shuffled_playlist;
+		vector<int> randomized;
+		for (int i = 0; i < my_playlist.size(); ++i) {
+			randomized.push_back(i);
+		}
+		random_shuffle(randomized.begin(), randomized.end());
+		for (int i = 0; i < randomized.size(); ++i) {
+			shuffled_playlist.insert_song(my_playlist[i]);
+		}
+		return shuffled_playlist;
 	}
 
 };
+
+Playlist operator+(Playlist& playlist_one, Playlist& playlist_two) {
+	Playlist combine_playlist;
+	for(int i = 0; i < playlist_one.my_playlist.size(); ++i) {
+		combine_playlist.insert_song(playlist_one.my_playlist[i]);
+	}
+	for (int i = 0; i < playlist_two.my_playlist.size(); ++i) {
+		combine_playlist.insert_song(playlist_two.my_playlist[i]);
+	}
+
+	return combine_playlist;
+}
+
 
 
 
 int main()
 {
+	srand(time(0));
+
     std::cout << "Hello World!\n";
 }
 
