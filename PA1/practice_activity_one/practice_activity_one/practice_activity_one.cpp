@@ -8,9 +8,12 @@
 #include <vector>
 #include <algorithm> 
 #include <time.h>
+#define ASSERT(condition) if(!(condition)) return false
+
 using namespace std;
 
 class Music {
+	friend class TestMusic;
 public:
 	unsigned int year;
 	string artist_name;
@@ -35,12 +38,13 @@ public:
 	}
 
 	string get_artist() {
-		return this->artist_name;
+		return artist_name;
 	}
 
 };
 
 class Song : public Music{
+	friend class TestMusic;
 public:
 	string genre;
 	string song_name;
@@ -64,7 +68,8 @@ public:
 };
 
 class Playlist {
-	
+    friend class TestMusic;
+	friend Playlist operator+(const Playlist& playlist_one, const Playlist& playlist_two);
 
 public:
 	friend Playlist operator+(const Playlist& playlist_one, const Playlist& playlist_two);
@@ -118,24 +123,175 @@ Playlist operator+(Playlist& playlist_one, Playlist& playlist_two) {
 }
 
 
+class TestMusic {
+public:
+	bool testMusicGetArtist();
+	bool testMusicDefaultConstructor();
+	bool testMusicParametricConstructor();
+	bool testMusicOperatorEquals();
+	bool testSongDefaultConstructor();
+	bool testSongParametricConstructor();
+	bool testSongOperatorEquals();
+	bool testPlaylistInsertSong();
+	bool testPlaylistShuffleSongs();
+	void run();
+};
+
+bool TestMusic::testMusicDefaultConstructor() {
+    Music m;
+    ASSERT(m.artist_name == "");
+    ASSERT(m.music_id == "");
+    ASSERT(m.year == 0);
+    return true;
+}
+bool TestMusic::testMusicParametricConstructor() {
+    Music m = Music(2017, "BTS", "AGoodSong");
+    ASSERT(m.artist_name == "BTS");
+    ASSERT(m.music_id == "AGoodSong");
+    ASSERT(m.year == 2017);
+    return true;
+}
+bool TestMusic::testMusicGetArtist() {
+    Music m = Music(2017, "BTS", "AGoodSong");
+    ASSERT(m.get_artist() == "BTS");
+    return true;
+}
+bool TestMusic::testMusicOperatorEquals() {
+    Music m1 = Music(2017, "BTS", "AGoodSong");
+    Music m2 = Music(2017, "BTS", "AGoodSong");
+    ASSERT(m1 == m2);
+    Music m3;
+    Music m4;
+    ASSERT(m3 == m4);
+    return true;
+}
+
+bool TestMusic::testSongDefaultConstructor() {
+    Music m;
+    Song s;
+    ASSERT(static_cast<Music>(s) == m);
+    ASSERT(s.genre == "");
+    ASSERT(s.song_length == 0);
+    ASSERT(s.song_name == "");
+    return true;
+}
+bool TestMusic::testSongParametricConstructor() {
+    Music m = Music(2017, "BTS", "AGoodSong");
+    Song s = Song("KPop", "DNA", 223, m);
+    ASSERT(static_cast<Music>(s) == m);
+    ASSERT(s.genre == "KPop");
+    ASSERT(s.song_name == "DNA");
+    ASSERT(s.song_length == 223);
+    return true;
+}
+bool TestMusic::testSongOperatorEquals() {
+    Song s1 = Song("KPop", "DNA", 223, Music(2017, "BTS", "AGoodSong"));
+    Song s2 = Song("KPop", "DNA", 223, Music(2017, "BTS", "AGoodSong"));
+    ASSERT(s1 == s2);
+    Song s3;
+    Song s4;
+    ASSERT(s3 == s4);
+    return true;
+}
+
+bool TestMusic::testPlaylistInsertSong() {
+    Playlist p;
+    Song s1 = Song("KPop", "DNA", 223, Music(2017, "BTS", "AGoodSong"));
+    Song s2 = Song("Kpop", "Spring Day", 274, Music(2016, "BTS", "ADifferentGoodSong"));
+    ASSERT(p.insert_song(s1));
+    ASSERT(p.my_playlist.size() == 1);
+    ASSERT(p.my_playlist[0] == s1);
+    ASSERT(p.insert_song(s2));
+    ASSERT(p.my_playlist.size() == 2);
+    ASSERT(!p.insert_song(s1));
+    return true;
+}
+bool TestMusic::testPlaylistShuffleSongs() {
+    Playlist p;
+    vector<Song> songs;
+    songs.push_back(Song("KPop", "DNA", 223, Music(2017, "BTS", "AGoodSong")));
+    songs.push_back(Song("Kpop", "Spring Day", 274, Music(2016, "BTS", "ADifferentGoodSong")));
+    songs.push_back(Song("Kpop", "Blood, Sweat, and Tears", 217, Music(2016, "BTS", "AReallyGoodSong")));
+    for(auto& s : songs) {
+        p.insert_song(s);
+    }
+
+    Playlist shuffled = p.shuffle_songs();
+    ASSERT(shuffled.my_playlist.size() == p.my_playlist.size());
+
+    //Test that all songs in the original playlist are in the shuffled playlist
+    for(auto& pSong : p.my_playlist) {
+        bool found = false;
+        for(auto& shuffledSong : shuffled.my_playlist) {
+            if (pSong == shuffledSong) found = true;
+        }
+        ASSERT(found);
+    }
+
+    //Test that the songs are not in the same order as the original playlist
+    int diffs = 0;
+    for (int i = 0; i < p.my_playlist.size(); i++) {
+        if (!(p.my_playlist[i] == shuffled.my_playlist[i])) {
+            diffs++;
+        }
+    }
+	cout << diffs;
+    ASSERT(diffs > 0);
+
+    return true;
+}
+
+void TestMusic::run() {
+    int failCount = 0;
+    if (!testMusicGetArtist()) {
+        cout << "testMusicGetArtist failed" << endl;
+        failCount++;
+    }
+    if (!testMusicDefaultConstructor()) {
+        cout << "testMusicDefaultConstructor failed" << endl;
+        failCount++;
+    }
+    if (!testMusicParametricConstructor()) {
+        cout << "testMusicParametricConstructor failed" << endl;
+        failCount++;
+    }
+    if (!testMusicOperatorEquals()) {
+        cout << "testMusicOperatorEquals failed" << endl;
+        failCount++;
+    }
+
+    if (!testSongDefaultConstructor()) {
+        cout << "testSongDefaultConstructor failed" << endl;
+        failCount++;
+    }
+    if (!testSongParametricConstructor()) {
+        cout << "testSongParametricConstructor failed" << endl;
+        failCount++;
+    };
+    if (!testSongOperatorEquals()) {
+        cout << "testSongOperatorEquals failed" << endl;
+        failCount++;
+    };
+    if (!testPlaylistInsertSong()) {
+        cout << "testPlaylistInsertSong failed" << endl;
+        failCount++;
+    }
+    if (!testPlaylistShuffleSongs()) {
+        cout << "testPlaylistShuffleSongs failed" << endl;
+        failCount++;
+    }
+    if (failCount) {
+        cout << "Fail count: " << failCount << endl;
+    } else {
+        cout << "All tests passed!" << endl;
+    }
+}
 
 
 int main()
 {
 	srand(time(0));
-
-    std::cout << "Hello World!\n";
+	TestMusic tester;
+    tester.run();
+    return 0;
 }
-
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
