@@ -87,7 +87,7 @@ public:
 				++artist_count;
 			}
 		}
-		can_insert == can_insert && (artist_count > 3);
+		can_insert == can_insert && (artist_count < 3);
 		if (can_insert) {
 			my_playlist.push_back(song_info);
 		}
@@ -98,7 +98,10 @@ public:
 	Playlist shuffle_songs() {
 		Playlist shuffled_playlist;
 		vector<Song> copy_playlist = my_playlist;
-		random_shuffle(copy_playlist.begin(), copy_playlist.end());
+		for (int i = my_playlist.size() - 1; i > 0; i--) {
+			int rand_num = (rand() % (i + 1));
+			swap(my_playlist[rand_num], my_playlist[i]);
+		}
 		shuffled_playlist.my_playlist = copy_playlist;
 		return shuffled_playlist;
 	}
