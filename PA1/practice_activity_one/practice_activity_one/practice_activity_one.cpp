@@ -134,6 +134,7 @@ public:
 	bool testSongOperatorEquals();
 	bool testPlaylistInsertSong();
 	bool testPlaylistShuffleSongs();
+    bool testPlaylistOperatorPlus();
 	void run();
 };
 
@@ -177,16 +178,16 @@ bool TestMusic::testSongDefaultConstructor() {
 }
 bool TestMusic::testSongParametricConstructor() {
     Music m = Music(2017, "BTS", "AGoodSong");
-    Song s = Song("KPop", "DNA", 223, m);
+    Song s = Song("Kpop", "DNA", 223, m);
     ASSERT(static_cast<Music>(s) == m);
-    ASSERT(s.genre == "KPop");
+    ASSERT(s.genre == "Kpop");
     ASSERT(s.song_name == "DNA");
     ASSERT(s.song_length == 223);
     return true;
 }
 bool TestMusic::testSongOperatorEquals() {
-    Song s1 = Song("KPop", "DNA", 223, Music(2017, "BTS", "AGoodSong"));
-    Song s2 = Song("KPop", "DNA", 223, Music(2017, "BTS", "AGoodSong"));
+    Song s1 = Song("Kpop", "DNA", 223, Music(2017, "BTS", "AGoodSong"));
+    Song s2 = Song("Kpop", "DNA", 223, Music(2017, "BTS", "AGoodSong"));
     ASSERT(s1 == s2);
     Song s3;
     Song s4;
@@ -196,7 +197,7 @@ bool TestMusic::testSongOperatorEquals() {
 
 bool TestMusic::testPlaylistInsertSong() {
     Playlist p;
-    Song s1 = Song("KPop", "DNA", 223, Music(2017, "BTS", "AGoodSong"));
+    Song s1 = Song("Kpop", "DNA", 223, Music(2017, "BTS", "AGoodSong"));
     Song s2 = Song("Kpop", "Spring Day", 274, Music(2016, "BTS", "ADifferentGoodSong"));
     ASSERT(p.insert_song(s1));
     ASSERT(p.my_playlist.size() == 1);
@@ -209,7 +210,7 @@ bool TestMusic::testPlaylistInsertSong() {
 bool TestMusic::testPlaylistShuffleSongs() {
     Playlist p;
     vector<Song> songs;
-    songs.push_back(Song("KPop", "DNA", 223, Music(2017, "BTS", "AGoodSong")));
+    songs.push_back(Song("Kpop", "DNA", 223, Music(2017, "BTS", "AGoodSong")));
     songs.push_back(Song("Kpop", "Spring Day", 274, Music(2016, "BTS", "ADifferentGoodSong")));
     songs.push_back(Song("Kpop", "Blood, Sweat, and Tears", 217, Music(2016, "BTS", "AReallyGoodSong")));
     for(auto& s : songs) {
@@ -235,9 +236,37 @@ bool TestMusic::testPlaylistShuffleSongs() {
             diffs++;
         }
     }
-	cout << diffs;
+	// cout << diffs;
     ASSERT(diffs > 0);
 
+    return true;
+}
+
+bool TestMusic::testPlaylistOperatorPlus() {
+    Playlist p1;
+    vector<Song> songs1;
+    songs1.push_back(Song("Kpop", "DNA", 223, Music(2017, "BTS", "AGoodSong")));
+    songs1.push_back(Song("Kpop", "Spring Day", 274, Music(2016, "BTS", "ADifferentGoodSong")));
+    songs1.push_back(Song("Kpop", "Blood, Sweat, and Tears", 217, Music(2016, "BTS", "AReallyGoodSong")));
+    for(auto& s : songs1) {
+        p1.insert_song(s);
+    }
+    Playlist p2;
+    vector<Song> songs2;
+    songs2.push_back(Song("Kpop", "DDU-DU DDU-DU", 261, Music(2016, "BlackPink", "WhatIsASongID")));
+    songs2.push_back(Song("Kpop", "Gangnam Style", 219, Music(2012, "PSY", "SongIdHere")));
+    songs2.push_back(Song("Kpop", "SOLO", 169, Music(2018, "JENNIE", "IdOfSong")));
+    for(auto& s : songs2) {
+        p2.insert_song(s);
+    }
+    
+    Playlist combined = p1 + p2;
+    ASSERT(combined.my_playlist.size() == (p1.my_playlist.size() + p2.my_playlist.size()));
+    ASSERT(combined.my_playlist[p1.my_playlist.size()] == p2.my_playlist[0]);
+    Playlist empty;
+    Playlist plusEmpty = p1 + empty;
+    ASSERT(plusEmpty.my_playlist.size() == p1.my_playlist.size());
+    
     return true;
 }
 
@@ -280,6 +309,10 @@ void TestMusic::run() {
         cout << "testPlaylistShuffleSongs failed" << endl;
         failCount++;
     }
+    if (!testPlaylistOperatorPlus()) {
+        cout << "testPlaylistOperatorPlus failed" << endl;
+        failCount++;
+    }
     if (failCount) {
         cout << "Fail count: " << failCount << endl;
     } else {
@@ -293,5 +326,6 @@ int main()
 	srand(time(0));
 	TestMusic tester;
     tester.run();
+    getchar();
     return 0;
 }
