@@ -8,6 +8,8 @@
 
 using namespace std;
 
+int MAX_ARTIST_COUNT = 3;
+
 class Music {
 	friend class TestMusic;
 public:
@@ -84,7 +86,7 @@ public:
 			}
 		}
 
-		can_insert = can_insert && (artist_count < 3);
+		can_insert = can_insert && (artist_count < MAX_ARTIST_COUNT);
 		if (can_insert) {
 			my_playlist.push_back(song_info);
 		}
