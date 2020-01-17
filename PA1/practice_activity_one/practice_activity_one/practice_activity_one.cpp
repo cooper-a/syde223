@@ -5,10 +5,22 @@
 
 //Custom assertion for easier testing
 #define ASSERT(condition) if(!(condition)) return false
-
 using namespace std;
-
 int MAX_ARTIST_COUNT = 3;
+
+//***************************************************************
+//  Student Names and Numbers: COOPER ANG (20768006) and JESS MUIR ()
+//
+//  SYDE 121 Lab: Lab Assignment #6
+//  Filename: lab07_01.cpp
+//
+//  I hereby declare that this code, submitted for credit for the course
+//  SYDE 223, is a product of my own efforts.  This coded solution has
+//  not been plagiarized from other sources and has not been knowingly
+//  plagiarized by others.
+//
+//**************************************************************
+
 
 class Music {
 	friend class TestMusic;
