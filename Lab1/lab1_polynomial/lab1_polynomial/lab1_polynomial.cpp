@@ -47,13 +47,13 @@ bool Polynomial::operator==(const Polynomial& target) {
 }
 
 Polynomial Polynomial::operator+(const Polynomial& target) {
-	bool targetHigherDegree = target.data.size >= data.size;
-	int emptyArray[10];
+	bool targetHigherDegree = target.data.size() >= data.size();
+	int emptyArray[10] = {};
 	Polynomial newPolynomial(emptyArray, 1);
-	for (int i = 0; i < (targetHigherDegree ? target.data.size : data.size); i++) {
+	for (int i = 0; i < (targetHigherDegree ? target.data.size() : data.size()); i++) {
 		newPolynomial.data.push_back(targetHigherDegree ? target.data[i] : data[i]);
 	}
-	for (int i = 0; i < (targetHigherDegree ? data.size : target.data.size); i++) {
+	for (int i = 0; i < (targetHigherDegree ? data.size() : target.data.size()); i++) {
 		newPolynomial.data[i] += (targetHigherDegree ? data[i] : target.data[i]);
 	}
 
@@ -62,12 +62,31 @@ Polynomial Polynomial::operator+(const Polynomial& target) {
  
 
 Polynomial Polynomial::operator-(const Polynomial& target) {
-	int emptyArray[10];
+	// create a new polynomial object and copy over *this.data to the new polynomial data
+	int emptyArray[10] = {};
 	Polynomial newPolynomial(emptyArray, 1);
+	bool targetHigherDegree = target.data.size() >= data.size();
+	newPolynomial.data = data;
 
-	for (int i = 0; i < data.size; i++) {
-		data[i]
+	// if the target polynomial is of higher degree resize the new polynomial data to that size
+	if (targetHigherDegree) newPolynomial.data.resize(target.data.size(), 0);
+	for (int i = 0; i < target.data.size(); i++) {
+		newPolynomial.data[i] = newPolynomial.data[i] - target.data[i];
 	}
+
+	// TODO should remove 0s at end?
+
+	return newPolynomial;
+}
+
+Polynomial Polynomial::derivative() {
+	int emptyArray[10] = {};
+	Polynomial newPolynomial(emptyArray, 1);
+	newPolynomial.data.resize(data.size() - 1, 0);
+	for (int i = 1; i < data.size(); i++) {
+		newPolynomial.data[i - 1] = data[i] * i;
+	}
+	return newPolynomial;
 }
 
 int main() {
