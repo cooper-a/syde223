@@ -9,7 +9,7 @@ using namespace std;
 int MAX_ARTIST_COUNT = 3;
 
 //***************************************************************
-//  Student Names and Numbers: COOPER ANG (20768006) and JESS MUIR ()
+//  Student Names and Numbers: COOPER ANG (20768006) and JESS MUIR (20758989)
 //
 //
 //  I hereby declare that this code, submitted for credit for the course
