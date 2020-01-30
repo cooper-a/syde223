@@ -2,6 +2,7 @@
 #include "lab1_polynomial.hpp"
 #include <random>
 #include <fstream>
+#include <cstring>
 #define ASSERT(condition) if(!(condition)) return false
 
 using namespace std;
