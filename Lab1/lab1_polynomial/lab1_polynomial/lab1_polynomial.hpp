@@ -26,6 +26,7 @@ public:
 class PolynomialTest {
 public:
 	bool testConstructors();
+	bool testPrint();
 	bool testComparison();
 	bool testAddition();
 	bool testSubtraction();
