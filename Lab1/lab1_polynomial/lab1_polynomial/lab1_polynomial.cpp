@@ -24,7 +24,9 @@ Polynomial::Polynomial(int A[], int size) {
 }
 
 Polynomial::Polynomial() {
+	//uni2 is a random number generator [0, 1000]
 	int polynomialDegree = uni2(rng);
+	//uni is a random number generator [-1000, 1000]
 	for (int i = 0; i < polynomialDegree; i++) {
 		data.push_back(uni(rng));
 	}
@@ -40,10 +42,12 @@ Polynomial::Polynomial(string fileName) {
 		data.resize(size);
 		for (int i = 0; i < size; i++) {
 			getline(polyFile, line);
-			data[i] = stoi(line);
+			if (!line.empty()) {
+				data[i] = stoi(line);
+			}
 		}
 	}
-
+	remove_trailing_zeros(*this);
 }
 
 bool Polynomial::operator==(const Polynomial& target) {
@@ -152,6 +156,7 @@ bool PolynomialTest::testConstructors() {
 		ASSERT(i <= 1000 && i >= -1000);
 	}
 	//Demonstrates a consecutive call generates a different random polynomial
+	
 	Polynomial otherRandomPolynomial = Polynomial();
 	ASSERT(randomPolynomial.data != otherRandomPolynomial.data);
 
@@ -165,6 +170,18 @@ bool PolynomialTest::testConstructors() {
 	Polynomial getPFile("testvec.txt");
 	//Demonstrates that inputting a filename creates the expected polynomial
 	ASSERT(pFile.data == getPFile.data);
+
+	//Creates file "testvec2.txt" to test filename parameter
+	ofstream testFile2;
+	testFile2.open("testvec2.txt");
+	testFile2 << "4\n1\n2\n\n4\n";
+	testFile2.close();
+	vector<int> filevec2{ 1, 2, 0, 4 };
+	Polynomial pFile2(&filevec2[0], filevec2.size());
+	Polynomial getPFile2("testvec2.txt");
+	//Demonstrates that inputting a filename creates the expected polynomial
+	ASSERT(pFile2.data == getPFile2.data);
+
 
 	return true;
 }
