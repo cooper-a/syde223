@@ -6,9 +6,10 @@
 using namespace std;
 
 class Polynomial {
-public:
+private:
 	vector<int> data;
 	void remove_trailing_zeros(Polynomial& target);
+public:
 	Polynomial(int A[], int size);
 	Polynomial();
 	Polynomial(string fileName);
