@@ -37,14 +37,20 @@ bool DronesManager::empty() const {
 }
 
 DronesManager::DroneRecord DronesManager::select(unsigned int index) const {
-	if (size == 0) return DroneRecord(0);
+	if (first == NULL) return DroneRecord(0);
 	if (index > size - 1) index = size - 1;
 	DroneRecord* current = first;
-	for (unsigned int i = 0; i < index; i++) {
+	unsigned int counter = 0;
+	while (current) {
+		if (counter == index) {
+			DroneRecord* selected = new DroneRecord();
+			selected = current;
+			return *selected;
+		}
+		counter++;
 		current = current->next;
 	}
-	DroneRecord selected = DroneRecord(*current);
-	return selected;
+	
 }
 
 unsigned int DronesManager::search(DroneRecord value) const {
@@ -69,7 +75,8 @@ bool DronesManager::insert(DroneRecord value, unsigned int index) {
 	if (index == 0) insert_front(value);
 	else if (index == size) insert_back(value);
 	else {
-		DroneRecord* copied_value = new DroneRecord(value);
+		DroneRecord* copied_value = new DroneRecord();
+		*copied_value = value;
 		DroneRecord* current = first;
 		for (unsigned int i = 0; i < index; i++) {
 			current = current->next;
@@ -117,6 +124,7 @@ bool DronesManager::insert_back(DroneRecord value) {
 }
 
 bool DronesManager::remove(unsigned int index) {
+	if (first == NULL) return false;
 	if (index > size - 1) return false;
 	if (index == 0) remove_front();
 	else if (index == size - 1) remove_back();
@@ -125,8 +133,10 @@ bool DronesManager::remove(unsigned int index) {
 		for (unsigned int i = 0; i < index; i++) {
 			current = current->next;
 		}
-		current->prev->next = current->next;
-		current->next->prev = current->prev;
+		DroneRecord* next_drone = current->next;
+		DroneRecord* prev_drone = current->prev;
+		current->prev->next = next_drone;
+		current->next->prev = prev_drone;
 		delete current;
 		size--;
 	}
@@ -168,6 +178,7 @@ bool DronesManager::remove_back() {
 }
 
 bool DronesManager::replace(unsigned int index, DroneRecord value) {
+	if (first == NULL) return false;
 	if (index > size - 1) return false;
 	DroneRecord* copied_value = new DroneRecord();
 	*copied_value = value;
@@ -175,25 +186,26 @@ bool DronesManager::replace(unsigned int index, DroneRecord value) {
 	for (unsigned int i = 0; i < index; i++) {
 		current = current->next;
 	}
-	if (current == first) first = copied_value;
-	if (current == last) last = copied_value;
-	if (copied_value != first) current->prev->next = copied_value;
-	if (copied_value != last) current->next->prev = copied_value;
-	return false;
+	if (*current == *first) first = copied_value;
+	else current->prev->next = copied_value;
+	if (*current == *last) last = copied_value;
+	else current->next->prev = copied_value;
+	return true;
 }
 
 bool DronesManager::reverse_list() {
 	if (first == NULL) return true;
 	DroneRecord* current = first;
+	DroneRecord* temp = NULL;
 	while (current) {
-		DroneRecord* temp_next = current->next;
-		current->next = current->prev;
-		current->prev = temp_next;
-		current = current->next;
+		temp = current->prev;
+		current->prev = current->next;
+		current->next = temp;
+		current = current->prev;
 	}
-	DroneRecord* temp = first;
+	DroneRecord* temp_first = first;
 	first = last;
-	last = temp;
+	last = temp_first;
 	return true;
 }
 
