@@ -1,6 +1,7 @@
 #include "lab2_drones_manager.hpp"
-
+#include <iostream>
 // TODO: Implement all of the listed functions below
+using namespace std;
 
 DronesManager::DronesManager() {
 	first = NULL;
@@ -65,7 +66,11 @@ unsigned int DronesManager::search(DroneRecord value) const {
 
 void DronesManager::print() const {
 	DroneRecord* current = first;
-
+	while (current != NULL) {
+		cout << current->droneID << ' ';
+		current = current->next;
+	}
+	cout << endl;
 }
 
 bool DronesManager::insert(DroneRecord value, unsigned int index) {
@@ -222,13 +227,13 @@ bool DronesManagerSorted::is_sorted_asc() const {
 bool DronesManagerSorted::is_sorted_desc() const {
 	DroneRecord* current = first;
 	unsigned int prev_val = INT_MAX;
-	bool is_sorted_asc = true;
+	bool is_sorted_desc = true;
 	while (current) {
-		is_sorted_asc = prev_val >= current->droneID;
+		is_sorted_desc = prev_val >= current->droneID;
 		prev_val = current->droneID;
 		current = current->next;
 	}
-	return is_sorted_asc;
+	return is_sorted_desc;
 }
 
 bool DronesManagerSorted::insert_sorted_asc(DroneRecord val) {
@@ -249,7 +254,7 @@ bool DronesManagerSorted::insert_sorted_desc(DroneRecord val) {
 	if (is_sorted_desc()) {
 		DroneRecord* current = first;
 		unsigned int counter = 0;
-		while (current && current->droneID >= val.droneID) {
+		while (current && current->droneID > val.droneID) {
 			counter++;
 			current = current->next;
 		}
@@ -260,9 +265,29 @@ bool DronesManagerSorted::insert_sorted_desc(DroneRecord val) {
 }
 
 void DronesManagerSorted::sort_asc() {
-	return;
+	if (first == NULL || first->next == NULL) return;
+	DroneRecord* current;
+	bool used_swap = false;
+	do {
+		used_swap = false;
+		current = first;
+		while (current->next != NULL) {
+			if (current->droneID > current->next->droneID) {
+				swap(current->droneID, current->next->droneID);
+				swap(current->batteryType, current->next->batteryType);
+				swap(current->description, current->next->description);
+				swap(current->droneType, current->next->droneType);
+				swap(current->manufacturer, current->next->manufacturer);
+				swap(current->range, current->next->range);
+				swap(current->yearBought, current->next->yearBought);
+				used_swap = true;
+			}
+			current = current->next;
+		}
+	} while (used_swap);
 }
     
 void DronesManagerSorted::sort_desc() {
-	return;
+	sort_asc();
+	reverse_list();
 }

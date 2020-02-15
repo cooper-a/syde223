@@ -256,59 +256,17 @@ public:
 		sort_test.insert_front(drones_test_sort[4]);
 		sort_test.insert_front(drones_test_sort[5]);
 		
+		DronesManagerSorted sort_test_two;
+
 		sort_test.sort_asc();
 		ASSERT_TRUE(sort_test.is_sorted_asc());
-
-		sort_test.insert_front(drones_test_sort[0]);
-		sort_test.insert_front(drones_test_sort[1]);
-		sort_test.insert_front(drones_test_sort[2]);
-		sort_test.insert_front(drones_test_sort[3]);
-		sort_test.insert_front(drones_test_sort[4]);
-		sort_test.insert_front(drones_test_sort[5]);
+		sort_test_two.sort_asc();
+		ASSERT_TRUE(sort_test.is_sorted_asc());
 
 		sort_test.sort_desc();
 		ASSERT_TRUE(sort_test.is_sorted_desc());
-
-		DronesManager::DroneRecord drones[]{
-			DronesManager::DroneRecord(100),
-			DronesManager::DroneRecord(200),
-			DronesManager::DroneRecord(300),
-			DronesManager::DroneRecord(400)
-		};
-
-		DronesManager m;
-		DronesManager m2;
-		for (int i = 0; i < 4; ++i) {
-			ASSERT_TRUE(m.insert(drones[i], i))
-				ASSERT_TRUE(m2.insert_back(drones[i]))
-		}
-
-		for (int i = 0; i < 4; ++i) {
-			ASSERT_TRUE(m.select(i) == m2.select(i))
-		}
-
-		m.reverse_list();
-		m.reverse_list();
-
-		for (int i = 0; i < 4; ++i) {
-			ASSERT_TRUE(m.select(i) == m2.select(i))
-		}
-
-		m.reverse_list();
-
-		for (int i = 0; i < 3; ++i) {
-			ASSERT_TRUE(m.remove(1))
-		}
-
-		ASSERT_TRUE(m.first == m.last)
-			ASSERT_TRUE(m.size == 1)
-			ASSERT_TRUE(m.select(0) == drones[3])
-
-			ASSERT_TRUE(m.remove(0))
-			ASSERT_FALSE(m.remove(0))
-			ASSERT_TRUE(m.first == NULL && m.first == m.last)
-
-			return true;
+		sort_test_two.sort_desc();
+		ASSERT_TRUE(sort_test_two.is_sorted_desc());
 	}  
 	
 	// PURPOSE: insert and remove into sorted manager in ascending order
@@ -351,11 +309,11 @@ public:
 		m.insert_sorted_desc(drones[4]);
 		m.insert_sorted_desc(drones[3]);
 		m.insert_sorted_desc(drones[2]);
-		ASSERT_TRUE(m.select(0) == drones[0]);
-		ASSERT_TRUE(m.select(1) == drones[1]);
+		ASSERT_TRUE(m.select(0) == drones[4]);
+		ASSERT_TRUE(m.select(1) == drones[3]);
 		ASSERT_TRUE(m.select(2) == drones[2]);
-		ASSERT_TRUE(m.select(3) == drones[3]);
-		ASSERT_TRUE(m.select(4) == drones[4]);
+		ASSERT_TRUE(m.select(3) == drones[1]);
+		ASSERT_TRUE(m.select(4) == drones[0]);
 		ASSERT_TRUE(m.is_sorted_desc());
 		ASSERT_TRUE(!m.is_sorted_asc());
 		return true;
