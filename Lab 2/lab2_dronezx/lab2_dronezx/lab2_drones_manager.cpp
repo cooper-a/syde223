@@ -43,9 +43,7 @@ DronesManager::DroneRecord DronesManager::select(unsigned int index) const {
 	unsigned int counter = 0;
 	while (current) {
 		if (counter == index) {
-			DroneRecord* selected = new DroneRecord();
-			selected = current;
-			return *selected;
+			return *current;
 		}
 		counter++;
 		current = current->next;
@@ -251,7 +249,7 @@ bool DronesManagerSorted::insert_sorted_desc(DroneRecord val) {
 	if (is_sorted_desc()) {
 		DroneRecord* current = first;
 		unsigned int counter = 0;
-		while (current && current->droneID > val.droneID) {
+		while (current && current->droneID >= val.droneID) {
 			counter++;
 			current = current->next;
 		}
@@ -262,23 +260,9 @@ bool DronesManagerSorted::insert_sorted_desc(DroneRecord val) {
 }
 
 void DronesManagerSorted::sort_asc() {
-	DroneRecord* current = first;
-	DroneRecord* prev_drone;
-	DroneRecord* next_drone;
-	if (current->droneID > current->next->droneID) {
-		prev_drone = current->prev;
-		next_drone = current->next;
-		if (prev_drone != NULL) {
-			prev_drone->next = next_drone;
-		}
-		current->next = next_drone->next;
-		current->prev = next_drone;
-		next_drone->next = current;
-		next_drone->prev = prev_drone;
-	}
+	return;
 }
     
 void DronesManagerSorted::sort_desc() {
-	sort_asc();
-	reverse_list();
+	return;
 }

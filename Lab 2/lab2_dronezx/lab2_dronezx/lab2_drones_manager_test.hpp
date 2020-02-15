@@ -239,6 +239,36 @@ public:
 	    	
 	// PURPOSE: inserts into an unsorted list, then sort the list
 	bool test10() {
+		DronesManager::DroneRecord drones_test_sort[]{
+			DronesManager::DroneRecord(172),
+			DronesManager::DroneRecord(2),
+			DronesManager::DroneRecord(4),
+			DronesManager::DroneRecord(4),
+			DronesManager::DroneRecord(3),
+			DronesManager::DroneRecord(5),
+		};
+
+		DronesManagerSorted sort_test;
+		sort_test.insert_front(drones_test_sort[0]);
+		sort_test.insert_front(drones_test_sort[1]);
+		sort_test.insert_front(drones_test_sort[2]);
+		sort_test.insert_front(drones_test_sort[3]);
+		sort_test.insert_front(drones_test_sort[4]);
+		sort_test.insert_front(drones_test_sort[5]);
+		
+		sort_test.sort_asc();
+		ASSERT_TRUE(sort_test.is_sorted_asc());
+
+		sort_test.insert_front(drones_test_sort[0]);
+		sort_test.insert_front(drones_test_sort[1]);
+		sort_test.insert_front(drones_test_sort[2]);
+		sort_test.insert_front(drones_test_sort[3]);
+		sort_test.insert_front(drones_test_sort[4]);
+		sort_test.insert_front(drones_test_sort[5]);
+
+		sort_test.sort_desc();
+		ASSERT_TRUE(sort_test.is_sorted_desc());
+
 		DronesManager::DroneRecord drones[]{
 			DronesManager::DroneRecord(100),
 			DronesManager::DroneRecord(200),
@@ -283,12 +313,52 @@ public:
 	
 	// PURPOSE: insert and remove into sorted manager in ascending order
 	bool test11() {
-	   return false;
+		DronesManager::DroneRecord drones[]{
+			DronesManager::DroneRecord(100),
+			DronesManager::DroneRecord(200),
+			DronesManager::DroneRecord(300),
+			DronesManager::DroneRecord(400),
+			DronesManager::DroneRecord(500)
+		};
+		DronesManagerSorted m;
+		m.insert_front(drones[0]);
+		m.insert_sorted_asc(drones[1]);
+		m.insert_sorted_asc(drones[4]);
+		m.insert_sorted_asc(drones[3]);
+		m.insert_sorted_asc(drones[2]);
+		ASSERT_TRUE(m.select(0) == drones[0]);
+		ASSERT_TRUE(m.select(1) == drones[1]);
+		ASSERT_TRUE(m.select(2) == drones[2]);
+		ASSERT_TRUE(m.select(3) == drones[3]);
+		ASSERT_TRUE(m.select(4) == drones[4]);
+		ASSERT_TRUE(m.is_sorted_asc());
+		ASSERT_TRUE(!m.is_sorted_desc());
+		return true;
 	}
 	
 	// PURPOSE: insert and remove into sorted manager in descending order
 	bool test12() {
-	   return false;
+		DronesManager::DroneRecord drones[]{
+			 DronesManager::DroneRecord(100),
+			 DronesManager::DroneRecord(200),
+			 DronesManager::DroneRecord(300),
+			 DronesManager::DroneRecord(400),
+			 DronesManager::DroneRecord(500)
+		};
+		DronesManagerSorted m;
+		m.insert_sorted_desc(drones[0]);
+		m.insert_sorted_desc(drones[1]);
+		m.insert_sorted_desc(drones[4]);
+		m.insert_sorted_desc(drones[3]);
+		m.insert_sorted_desc(drones[2]);
+		ASSERT_TRUE(m.select(0) == drones[0]);
+		ASSERT_TRUE(m.select(1) == drones[1]);
+		ASSERT_TRUE(m.select(2) == drones[2]);
+		ASSERT_TRUE(m.select(3) == drones[3]);
+		ASSERT_TRUE(m.select(4) == drones[4]);
+		ASSERT_TRUE(m.is_sorted_desc());
+		ASSERT_TRUE(!m.is_sorted_asc());
+		return true;
 	}  
 };
 
