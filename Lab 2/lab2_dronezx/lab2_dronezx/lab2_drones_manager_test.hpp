@@ -2,9 +2,13 @@
 #define DRONES_MANAGER_TEST
 
 #include "lab2_drones_manager.hpp"
+#include <random>
 
 #define ASSERT_TRUE(T) if (!(T)) return false;
 #define ASSERT_FALSE(T) if ((T)) return false;
+
+#define DM DronesManager
+#define DMS DronesManagerSorted
 
 class DronesManagerTest {
 public:
@@ -32,209 +36,133 @@ public:
 		ASSERT_TRUE(manager1.select(0) == manager2.select(0) && manager1.select(0) == DronesManager::DroneRecord(100))		
 	    return true;
 	}
-	
-	// TODO: Implement all of the test cases below
-	
+
+	// I use the macro DM for DronesManager because the name is long.
+
 	// PURPOSE: select() and search() work properly
 	bool test3() {
-		DronesManager::DroneRecord drones[]{
-			DronesManager::DroneRecord(100),
-			DronesManager::DroneRecord(200),
-			DronesManager::DroneRecord(300),
-			DronesManager::DroneRecord(400)
-		};
-
-		DronesManager m;
-		DronesManager m2;
-		for (int i = 0; i < 3; ++i) {
-			m.insert_back(drones[i]);
+		DM m;
+		for (int i = 0; i < 10; i++) 
+			m.insert_back(DM::DroneRecord(100 * i));
+		for (int i = 0; i < 10; i++) {
+			ASSERT_TRUE(m.search(100 * i) == i)
+			ASSERT_TRUE(m.select(i) == DM::DroneRecord(100 * i))
 		}
-
-		ASSERT_TRUE(DronesManager::DroneRecord(200) == m.select(1))
-			ASSERT_TRUE(DronesManager::DroneRecord(300) == m.select(2))
-			ASSERT_TRUE(DronesManager::DroneRecord(0) == m2.select(5))
-
-			ASSERT_TRUE(m.search(drones[1]) == 1)
-			ASSERT_TRUE(m.search(drones[3]) == m.size)
-
-			return true;
+		DMS ms;
+		for (int i = 0; i < 10; i++)
+			ms.insert_back(DM::DroneRecord(100 * i));
+		for (int i = 0; i < 10; i++) {
+			ASSERT_TRUE(m.search(100 * i) == i)
+			ASSERT_TRUE(m.select(i) == DM::DroneRecord(100 * i))
+		}
+	    return true;
 	}
 	
 	// PURPOSE: remove_front() and remove_back() on one-element list
 	bool test4() {
-		DronesManager::DroneRecord d(100);
-		DronesManager m1;
-		DronesManager m2;
-		m1.insert_back(d);
-		m2.insert_back(d);
-
-		ASSERT_TRUE(m1.remove_front())
-			ASSERT_TRUE(m1.first == NULL)
-			ASSERT_TRUE(m1.last == NULL)
-			ASSERT_TRUE(m1.size == 0)
-
-			ASSERT_TRUE(m2.remove_back())
-			ASSERT_TRUE(m2.first == NULL)
-			ASSERT_TRUE(m2.last == NULL)
-			ASSERT_TRUE(m2.size == 0)
-
-			return true;
+		DM m;
+		m.insert_back(DM::DroneRecord(100));
+		ASSERT_TRUE(m.remove_front())
+		ASSERT_FALSE(m.remove_front())
+		m.insert_back(DM::DroneRecord(100));
+		ASSERT_TRUE(m.remove_back());
+		ASSERT_FALSE(m.remove_back());
+	    return true;
 	}
 	
 	// PURPOSE: replace() and reverse_list() work properly
 	bool test5() {
-		DronesManager::DroneRecord drones[]{
-		DronesManager::DroneRecord(100),
-		DronesManager::DroneRecord(200),
-		DronesManager::DroneRecord(300),
-		DronesManager::DroneRecord(400)
-		};
-
-		DronesManager m;
-		DronesManager m2;
-
-		for (int i = 0; i < 4; ++i) {
-			m.insert_back(drones[i]);
+		DM m1, m2;
+		ASSERT_FALSE(m1.replace(0, DM::DroneRecord(999)))
+		for (int i = 0; i < 10; i++) {
+			DM::DroneRecord r = DM::DroneRecord(i * 100);
+			m1.insert_back(r);
+			m2.insert_front(r);
 		}
-		for (int i = 3; i >= 0; --i) {
-			m2.insert_back(drones[i]);
-		}
-
-		ASSERT_FALSE(m.replace(4, drones[0]))
-			ASSERT_TRUE(m.replace(3, drones[0]))
-			ASSERT_TRUE(m2.replace(0, drones[0]))
-			ASSERT_TRUE(m.reverse_list())
-			for (int i = 0; i < 4; ++i) {
-				ASSERT_TRUE(m.select(i) == m2.select(i))
-			}
-
-		return true;
+		ASSERT_TRUE(m1.reverse_list())
+		for (int i = 0; i < 10; i++)
+			ASSERT_TRUE(m1.select(i) == m2.select(i))
+		for (int i = 0; i < 10; i++)
+			ASSERT_TRUE(m1.replace(i, DM::DroneRecord(999)))
+		ASSERT_FALSE(m1.replace(10, DM::DroneRecord(999)))
+	    return true;
 	}
 	
 	// PURPOSE: insert_front() keeps moving elements forward
 	bool test6() {
-		DronesManager::DroneRecord drones[]{
-			DronesManager::DroneRecord(100),
-			DronesManager::DroneRecord(200),
-			DronesManager::DroneRecord(300),
-			DronesManager::DroneRecord(400)
-		};
-
-		DronesManager m;
-		DronesManager m2; // holds the expected result
-
-		for (int i = 0; i < 4; ++i) {
-			m2.insert_back(drones[i]);
+		DM m;
+		for (int i = 0; i < 10; i++) {
+			m.insert_front(DM::DroneRecord(100 * i));
+			ASSERT_TRUE(m.select(i) == DM::DroneRecord(0))
+			ASSERT_TRUE(m.select(0) == DM::DroneRecord(100 * i))
 		}
-
-		m.insert_front(drones[3]);
-		ASSERT_TRUE(m.insert_front(drones[2]));
-		ASSERT_TRUE(*m.first == drones[2])
-			ASSERT_TRUE(m.select(0) == drones[2])
-			ASSERT_TRUE(m.first->next == m.last)
-			m.insert_front(drones[1]);
-		m.insert_front(drones[0]);
-		for (int i = 0; i < 4; ++i) {
-			ASSERT_TRUE(m.select(i) == m2.select(i))
-		}
-
-		return true;
+	    return true;
 	}
 	
 	// PURPOSE: inserting at different positions in the list
 	bool test7() {
-		DronesManager::DroneRecord drones[]{
-			DronesManager::DroneRecord(100),
-			DronesManager::DroneRecord(200),
-			DronesManager::DroneRecord(300),
-			DronesManager::DroneRecord(400)
-		};
-
-		DronesManager m;
-		DronesManager m2; // expected result
-		for (int i = 0; i < 4; ++i) {
-			m2.insert_back(drones[i]);
+		DM m;
+		for (int i = 0; i < 10; i++)
+			m.insert_back(DM::DroneRecord(200 * i + 100));
+		for (int i = 0; i < 10; i++) {
+			ASSERT_TRUE(m.insert(DM::DroneRecord(200 * i), i * 2))
 		}
-
-		ASSERT_TRUE(m.insert(drones[1], 0))
-			ASSERT_FALSE(m.insert(drones[3], 3))
-			ASSERT_TRUE(m.insert(drones[0], 0))
-			ASSERT_TRUE(m.insert(drones[3], 2))
-			ASSERT_TRUE(m.insert(drones[2], 2))
-
-			for (int i = 0; i < 4; ++i) {
-				ASSERT_TRUE(m.select(i) == m2.select(i))
-			}
-
-		return true;
+		for (int i = 0; i < m.get_size(); i++) {
+			ASSERT_TRUE(m.select(i) == DM::DroneRecord(100 * i));
+		}
+	    return true;
 	}
 	
 	// PURPOSE: try to remove too many elements, then add a few elements
 	bool test8() {
-		DronesManager::DroneRecord drones[]{
-			DronesManager::DroneRecord(100),
-			DronesManager::DroneRecord(200),
-			DronesManager::DroneRecord(300),
-			DronesManager::DroneRecord(400)
-		};
-
-		DronesManager m;
-		DronesManager m2; // expected result after a couple of middle removals
-		for (int i = 0; i < 4; ++i) {
-			m.insert_back(drones[i]);
+		DM m;
+		for (int i = 0; i < 20; i++)
+			m.insert_back(DM::DroneRecord(100 * i));
+		for (int i = 0; i < 10; i++) {
+			ASSERT_TRUE(m.remove(10));
 		}
-		m2.insert_front(drones[0]);
-		m2.insert_back(drones[3]);
-		ASSERT_TRUE(m.remove(2))
-			ASSERT_TRUE(m.remove(1))
-			ASSERT_TRUE(m.select(0) == m2.select(0))
-			ASSERT_TRUE(m.select(1) == m2.select(1))
-
-			ASSERT_FALSE(m.remove(2))
-			ASSERT_TRUE(m.remove(0))
-			ASSERT_TRUE(m.remove(0))
-			ASSERT_FALSE(m.remove(0))
-
-			ASSERT_TRUE(m.insert(drones[0], 0))
-			ASSERT_TRUE(m.insert(drones[2], 0))
-			ASSERT_TRUE(m.insert(drones[1], 1))
-			ASSERT_TRUE(m.select(1) == drones[1])
-
-			return true;
+		ASSERT_FALSE(m.remove(10));
+		for (int i = 0; i < 20; i++) {
+			if (i < 10) {
+				ASSERT_TRUE(m.remove(0))
+			} else {
+				ASSERT_FALSE(m.remove(0))
+			}
+		}
+		for (int i = 0; i < 10; i++) {
+			m.insert_back(DM::DroneRecord(100 * i));
+		}
+		for (int i = 0; i < 10; i++) {
+			ASSERT_TRUE(m.select(i) == DM::DroneRecord(100 * i));
+		}
+	    return true;
 	}
 	
 	// PURPOSE: lots of inserts and deletes, some of them invalid
 	bool test9() {
-		DronesManager::DroneRecord drones[]{
-			DronesManager::DroneRecord(100),
-			DronesManager::DroneRecord(200),
-			DronesManager::DroneRecord(300),
-			DronesManager::DroneRecord(400)
-		};
-
-		DronesManager m;
-		for (int i = 0; i < 4; ++i) {
-			m.insert_front(drones[i]);
-			m.insert_back(drones[i]);
+		minstd_rand gen;
+		gen.seed(42);
+		DM m;
+		for (int i = 0; i < 10; i++) {
+			m.insert_back(DM::DroneRecord(100 * i));
 		}
-		// at this point, the list looks like:
-		// [400, 300, 200, 100, 100, 200, 300, 400]
-
-		for (int i = 0; i < 4; ++i) {
-			ASSERT_TRUE(m.remove(2))
+		for (auto i = 0; i < 30; i++) {
+			int idx = gen() % 20;
+			if (idx >= m.get_size()) {
+				ASSERT_FALSE(m.insert(DM::DroneRecord(100 * i), idx))
+			} else {
+				ASSERT_TRUE(m.insert(DM::DroneRecord(100 * i), idx))
+			}
 		}
-		ASSERT_FALSE(m.remove(4))
-			for (int i = 0; i < 4; ++i) {
-				ASSERT_TRUE(m.insert(drones[0], 2))
+		for (auto i = 0; i < 30; i++) {
+			int idx = gen() % 20;
+			if (idx >= m.get_size()) {
+				ASSERT_FALSE(m.remove(idx))
+			} else {
+				ASSERT_TRUE(m.remove(idx))
 			}
-		ASSERT_FALSE(m.insert(drones[3], 9))
-			ASSERT_TRUE(m.size == 8)
-			for (int i = 0; i < 8; ++i) {
-				ASSERT_TRUE(m.remove_front())
-			}
-		ASSERT_FALSE(m.remove(0))
-
-			return true;
+		}
+		return true;
 	}    
 	    	
 	// PURPOSE: inserts into an unsorted list, then sort the list
@@ -301,14 +229,14 @@ public:
 		}
 
 		ASSERT_TRUE(m.first == m.last)
-			ASSERT_TRUE(m.size == 1)
-			ASSERT_TRUE(m.select(0) == drones[3])
+		ASSERT_TRUE(m.size == 1)
+		ASSERT_TRUE(m.select(0) == drones[3])
 
-			ASSERT_TRUE(m.remove(0))
-			ASSERT_FALSE(m.remove(0))
-			ASSERT_TRUE(m.first == NULL && m.first == m.last)
+		ASSERT_TRUE(m.remove(0))
+		ASSERT_FALSE(m.remove(0))
+		ASSERT_TRUE(m.first == NULL && m.first == m.last)
 
-			return true;
+		return true;
 	}  
 	
 	// PURPOSE: insert and remove into sorted manager in ascending order
@@ -351,11 +279,11 @@ public:
 		m.insert_sorted_desc(drones[4]);
 		m.insert_sorted_desc(drones[3]);
 		m.insert_sorted_desc(drones[2]);
-		ASSERT_TRUE(m.select(0) == drones[0]);
-		ASSERT_TRUE(m.select(1) == drones[1]);
+		ASSERT_TRUE(m.select(4) == drones[0]);
+		ASSERT_TRUE(m.select(3) == drones[1]);
 		ASSERT_TRUE(m.select(2) == drones[2]);
-		ASSERT_TRUE(m.select(3) == drones[3]);
-		ASSERT_TRUE(m.select(4) == drones[4]);
+		ASSERT_TRUE(m.select(1) == drones[3]);
+		ASSERT_TRUE(m.select(0) == drones[4]);
 		ASSERT_TRUE(m.is_sorted_desc());
 		ASSERT_TRUE(!m.is_sorted_asc());
 		return true;

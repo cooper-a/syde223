@@ -1,6 +1,7 @@
 #include "lab2_drones_manager.hpp"
+#include <iostream>
 
-// TODO: Implement all of the listed functions below
+#define INT_MAX 2147483647
 
 DronesManager::DronesManager() {
 	first = NULL;
@@ -65,7 +66,12 @@ unsigned int DronesManager::search(DroneRecord value) const {
 
 void DronesManager::print() const {
 	DroneRecord* current = first;
-
+	if (current == NULL) cout << "NULL" << endl;
+	while (current) {
+		cout << "[" << current->droneID << "]->";
+		current = current->next;
+	}
+	cout << "NULL" << endl;
 }
 
 bool DronesManager::insert(DroneRecord value, unsigned int index) {
@@ -184,6 +190,8 @@ bool DronesManager::replace(unsigned int index, DroneRecord value) {
 	for (unsigned int i = 0; i < index; i++) {
 		current = current->next;
 	}
+	copied_value->next = current->next;
+	copied_value->prev = current->prev;
 	if (*current == *first) first = copied_value;
 	else current->prev->next = copied_value;
 	if (*current == *last) last = copied_value;
