@@ -56,7 +56,7 @@ public:
 		ASSERT_TRUE(q.enqueue(PQ::TI(2, "igor")));
 		ASSERT_TRUE(q.enqueue(PQ::TI(29, "igor")));
 		ASSERT_FALSE(q.enqueue(PQ::TI(1, "igor")));
-		q.print();
+		// q.print();
 		ASSERT_TRUE(q.dequeue());
 		ASSERT_TRUE(q.dequeue());
 		ASSERT_TRUE(q.dequeue());
@@ -106,143 +106,166 @@ public:
 
 	// PURPOSE: Tests if the new tree is valid
 	bool test1() {
-		string expected = "";
+		std::string expected_tree_level_order = "";
     
-		BinarySearchTree tree;
-		ASSERT_TRUE(tree.root == NULL);
-		ASSERT_TRUE(tree.size == 0 && tree.get_size() == 0);
-		ASSERT_TRUE(tree.height() == 0);
-		string real = level_order(tree.root);
-		ASSERT_TRUE(expected == real);
-		return true;
-	}
-
-	// PURPOSE: Tests a tree with one node
-	bool test2() {
-		std::string expected_tree_level_order = "5";
 		BinarySearchTree bst;
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(5, "Test Task")));
-		cout << "my level order" << level_order(bst.root);
-		ASSERT_TRUE(!bst.remove(BinarySearchTree::TaskItem(4, "Test Task")));
-		ASSERT_TRUE(bst.exists(BinarySearchTree::TaskItem(5, "Test Task")));
-		ASSERT_TRUE(bst.max() == bst.min() && bst.max() == BinarySearchTree::TaskItem(5, "Test Task"));
-		ASSERT_TRUE(bst.get_size() == 1);
-
+		ASSERT_TRUE(bst.root == NULL);
+		ASSERT_TRUE(bst.size == 0 && bst.get_size() == 0);
+    
+		// compare the tree's representation to the expected tree
 		std::string tree_level_order = level_order(bst.root);
 		ASSERT_TRUE(tree_level_order.compare(expected_tree_level_order) == 0)
-			return true;
+		return true;
+	}
+// lab provided names are too long :(
+#define BTI(n) BinarySearchTree::TaskItem(n, "igor") 
+	// PURPOSE: Tests a tree with one node
+	bool test2() {
+		std::string expect = "42";
+		BinarySearchTree b;
+
+		ASSERT_TRUE(b.insert(BTI(42)));
+		ASSERT_TRUE(*b.root == BTI(42));
+		ASSERT_TRUE(b.size == 1 && b.get_size() == 1);
+		ASSERT_TRUE(b.max() == b.min() && b.min() == BTI(42));
+		ASSERT_TRUE(b.height() == 0);
+		ASSERT_TRUE(b.exists(BTI(42)));
+		ASSERT_FALSE(b.exists(BTI(41)));
+		ASSERT_FALSE(b.remove(BTI(24)));
+		ASSERT_TRUE(level_order(b.root) == expect);
+		ASSERT_TRUE(b.remove(BTI(42)));
+
+		return true;
 	}
 
 	// PURPOSE: Tests insert, remove, and size on linear list formation with three elements
 	bool test3() {
-		std::string expected_tree_level_order = "10 8";
+		std::string expect = "101 102 103";
+		BinarySearchTree b;
+		
+		for (int i = 101; i < 104; i++) {
+			ASSERT_TRUE(b.insert(BTI(i)));
+			ASSERT_TRUE(b.get_size() == b.size && b.size == i - 100);
+		}
+		ASSERT_TRUE(level_order(b.root) == expect);
+		ASSERT_TRUE(b.size == 3 && b.get_size() == 3);
+		ASSERT_TRUE(b.max() == BTI(103) && b.min() == BTI(101));
+		ASSERT_TRUE(b.height() == 2);
+		for (int i = 101; i < 104; i++) {
+			ASSERT_TRUE(b.exists(BTI(i)));
+		}
+		ASSERT_FALSE(b.remove(BTI(104)));
+		for (int i = 103; i > 100; i--) {
+			ASSERT_TRUE(b.remove(BTI(i)));
+		}
 
-		BinarySearchTree bst;
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(10, "Test Task")));
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(8, "Test Task")));
-		ASSERT_TRUE(bst.get_size() == 2);
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(65, "Test Task")));
-		ASSERT_TRUE(bst.get_size() == 3);
-
-		ASSERT_TRUE(bst.remove(BinarySearchTree::TaskItem(65, "Test Task")));
-		ASSERT_TRUE(bst.get_size() == 2);
-
-		std::string tree_level_order = level_order(bst.root);
-		ASSERT_TRUE(tree_level_order.compare(expected_tree_level_order) == 0)
-			return true;
+		return true;
 	}
 
 	// PURPOSE: Tests removal of a node with one child
 	bool test4() {
-		std::string expected_tree = "3 2 6";
+		std::string expect_pre = "200 100 500 300";
+		std::string expect_post = "200 100 300";
+		BinarySearchTree b;
 
-		BinarySearchTree bst;
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(3, "Test Task")));
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(7, "Test Task")));
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(6, "Test Task")));
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(2, "Test Task")));
+		ASSERT_TRUE(b.insert(BTI(200)));
+		ASSERT_TRUE(b.insert(BTI(100)));
+		ASSERT_TRUE(b.insert(BTI(500)));
+		ASSERT_TRUE(b.insert(BTI(300)));
+		ASSERT_TRUE(b.height() == 2);
+		ASSERT_TRUE(level_order(b.root) == expect_pre);
 
-		ASSERT_TRUE(bst.remove(BinarySearchTree::TaskItem(7, "Test Task")));
-		ASSERT_TRUE(!bst.exists(BinarySearchTree::TaskItem(7, "Test Task")));
-		ASSERT_TRUE(level_order(bst.root).compare(expected_tree) == 0)
-			return true;
+		ASSERT_TRUE(b.remove(BTI(500)));
+		ASSERT_TRUE(b.height() == 1);
+		ASSERT_FALSE(b.exists(BTI(500)));
+		ASSERT_TRUE(level_order(b.root) == expect_post);
+
+		return true;
 	}
 
 	// PURPOSE: Tests insert of multiple elements and remove till nothing remains
 	bool test5() {
-		std::string expected_tree = "";
+		int toInsert[] = { 400, 200, 600, 100, 300, 500, 700 };
+		std::string expect_pre = "400 200 600 100 300 500 700";
+		std::string expect_post = "";
+		BinarySearchTree b;
 
-		BinarySearchTree bst;
-		int in[] = { 8, 3, 10, 15 };
+		for (int i = 0; i < 7; i++) {
+			ASSERT_TRUE(b.insert(BTI(toInsert[i])));
+			ASSERT_TRUE(b.size == b.get_size() && b.size == i + 1);
+		}
+		ASSERT_TRUE(b.height() == 2);
+		ASSERT_TRUE(level_order(b.root) == expect_pre);
+		for (int i = 6; i >= 0; i--) {
+			ASSERT_TRUE(b.remove(BTI(toInsert[i])));
+			ASSERT_FALSE(b.exists(BTI(toInsert[i])));
+		}
+		ASSERT_TRUE(level_order(b.root) == expect_post);
+		ASSERT_TRUE(b.root == NULL);
 
-		ASSERT_TRUE(insert_nodes(bst, in, 4));
-		ASSERT_TRUE(!bst.remove(BinarySearchTree::TaskItem(9, "Test Task")));
-		ASSERT_TRUE(bst.remove(BinarySearchTree::TaskItem(8, "Test Task")));
-		ASSERT_TRUE(bst.max() == BinarySearchTree::TaskItem(15, "Test Task"));
-		ASSERT_TRUE(bst.remove(BinarySearchTree::TaskItem(15, "Test Task")));
-		ASSERT_TRUE(bst.max() == BinarySearchTree::TaskItem(10, "Test Task"));
-		ASSERT_TRUE(bst.min() == BinarySearchTree::TaskItem(3, "Test Task"));
-		ASSERT_TRUE(bst.remove(BinarySearchTree::TaskItem(10, "Test Task")));
-		ASSERT_TRUE(bst.remove(BinarySearchTree::TaskItem(3, "Test Task")));
-		ASSERT_TRUE(bst.root == NULL);
-		ASSERT_TRUE(level_order(bst.root).compare(expected_tree) == 0)
-			return true;
+		return true;
 	}
 
 	// PURPOSE: Tests removal of root node when both children of root have two children
 	bool test6() {
-		std::string expected_tree1 = "6 3 10 1 9 15";
-		std::string expected_tree2 = "9 3 10 1 6 15";
+		int toInsert[] = { 400, 200, 600, 100, 300, 500, 700 };
+		std::string expect_pre = "400 200 600 100 300 500 700";
+		std::string expect_post = "500 200 600 100 300 700";
+		BinarySearchTree b;
 
-		BinarySearchTree bst;
-		int in[] = { 8, 3, 10, 1, 6, 9, 15 };
+		for (int i = 0; i < 7; i++) {
+			ASSERT_TRUE(b.insert(BTI(toInsert[i])));
+			ASSERT_TRUE(b.size == b.get_size() && b.size == i + 1);
+		}
+		ASSERT_TRUE(b.remove(BTI(400)));
+		ASSERT_TRUE(level_order(b.root) == expect_post);
 
-		ASSERT_TRUE(insert_nodes(bst, in, 7));
-		ASSERT_TRUE(!bst.remove(BinarySearchTree::TaskItem(12, "Test Task")));
-		ASSERT_TRUE(bst.remove(BinarySearchTree::TaskItem(8, "Test Task")));
-		ASSERT_TRUE(level_order(bst.root).compare(expected_tree1) == 0 ||
-			level_order(bst.root).compare(expected_tree2) == 0)
-			return true;
+		return true;
 	}
 
 	// PURPOSE: Tests depth with many inserts and some removes
 	bool test7() {
-		std::string expected_tree = "0 -5 10 -2 1 -4 -1";
-		cout << endl;
+		std::string expected = "500 499 501 498 502 497 503 496 504";
+		BinarySearchTree b;
 
-		BinarySearchTree bst;
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(0, "Test Task")));
-		cout << bst.height() << "should be 0";
-		ASSERT_TRUE(bst.height() == 0)
-			ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(10, "Test Task")));
-		ASSERT_TRUE(bst.height() == 1)
-			ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(-5, "Test Task")));
-		ASSERT_TRUE(bst.height() == 1)
-			ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(-2, "Test Task")));
-		ASSERT_TRUE(bst.height() == 2);
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(-4, "Test Task")));
-		ASSERT_TRUE(bst.height() == 3);
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(-1, "Test Task")));
-		ASSERT_TRUE(bst.height() == 3);
-		ASSERT_TRUE(bst.insert(BinarySearchTree::TaskItem(1, "Test Task")));
-		ASSERT_TRUE(bst.height() == 3);
-		ASSERT_TRUE(level_order(bst.root).compare(expected_tree) == 0)
-			return true;
+		for (int i = 500; i < 505; i++) {
+			ASSERT_TRUE(b.insert(BTI(i)));
+			ASSERT_TRUE(b.height() == i - 500);
+		}
+		int final_height = b.height();
+		for (int i = 499; i >= 496; i--) {
+			ASSERT_TRUE(b.insert(BTI(i)));
+			ASSERT_TRUE(b.height() == final_height);
+		}
+		for (int i = 499; i >= 496; i--) {
+			ASSERT_TRUE(b.remove(BTI(i)));
+			ASSERT_TRUE(b.height() == final_height);
+		}
+		for (int i = 500; i < 505; i++) {
+			ASSERT_TRUE(b.remove(BTI(i)));
+		}
+		ASSERT_TRUE(b.size == 0);
+
+		return true;
 	}
 
 	// PURPOSE: Tests lots of inserts and removes
 	bool test8() {
-		std::string expected_tree = "8 2 9 1 7 4 3 5 6";
+		std::string expected = "400 200 600 100 300 500 700 50 150 250 350 450 550 650 750";
+		int toInput[] = { 400, 200, 600, 100, 300, 500, 700, 
+						  50, 150, 250, 350, 450, 550, 650, 750 };
+		BinarySearchTree b;
 
-		BinarySearchTree bst;
-		int in[] = { 8, 2, 7, 4, 5, 3, 1, 9, 6 };
-		int nin = 9;
-		ASSERT_TRUE(insert_nodes(bst, in, nin));
-		ASSERT_TRUE(level_order(bst.root).compare(expected_tree) == 0)
-			for (int i = 0; i < nin; ++i) {
-				ASSERT_TRUE(bst.remove(BinarySearchTree::TaskItem(in[i], "Test Task")));
-			}
-		ASSERT_TRUE(!bst.remove(BinarySearchTree::TaskItem(in[0], "Test Task")));
+		for (int i = 0; i < 15; i++) {
+			ASSERT_TRUE(b.insert(BTI(toInput[i])));
+			ASSERT_TRUE(b.exists(BTI(toInput[i])));
+		}
+		ASSERT_TRUE(level_order(b.root) == expected);
+		for (int i = 0; i < 15; i++) {
+			ASSERT_TRUE(b.remove(BTI(toInput[i])));
+			ASSERT_FALSE(b.exists(BTI(toInput[i])));
+		}
+		ASSERT_TRUE(b.size == 0);
 		return true;
 	}
 };

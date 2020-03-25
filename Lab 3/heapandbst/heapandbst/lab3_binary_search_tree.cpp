@@ -118,6 +118,7 @@ bool BinarySearchTree::insert( BinarySearchTree::TaskItem val ) {
 	if (exists(val)) return false;
 	root = insert(val, root);
 	size++;
+	return true;
 }
 
 // PURPOSE: Finds the minimum value provided a node
